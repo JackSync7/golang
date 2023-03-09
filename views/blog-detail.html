@@ -1,0 +1,42 @@
+<html>
+
+<head>
+  <title>Creating Blog Page - detail</title>
+  <link rel="stylesheet" href="/public/css/blog.css" />
+</head>
+
+<body>
+  <!-- NavBar -->
+  <nav>
+    <div class="left-side">
+      <a href="/">
+        <img src="/public/images/logo.png" alt="logo" />
+      </a>
+      <ul>
+        <li>
+          <a href="/">Home</a>
+        </li>
+        <li>
+          <a href="/blog" class="list-active">Blog</a>
+        </li>
+      </ul>
+    </div>
+    <div class="right-side">
+      <a href="/contact"> Contact Me </a>
+    </div>
+  </nav>
+
+  <!-- Blog -->
+  <div class="blog-detail">
+    <div class="blog-detail-container">
+      <h1>{{.Blog.Title}}</h1>
+      <div class="author">12 Jul 2021 22:30 WIB | Ichsan Emrald Alamsyah </div>
+      <img src="/public/images/blog-img-detail.png" alt="detail" />
+      <p>
+        {{.Blog.Content}}
+      </p>
+    </div>
+  </div>
+</body>
+
+</html>
