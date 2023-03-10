@@ -35,22 +35,36 @@
         </div>
       </nav>
     <!-- END Navbar -->
-
       <div class="container">
         <div class="row">
-          <div class="col">
-            <h1>
-              {{.Project.Title}}
-            </h1>
-
+          <div class="col-md-6 ">
+            <img class="mt-5" src="/public/images/dev.jpg" alt="" width="600">
           </div>
-          <div class="col">
-            <img src="/public/images/dev.jpg" alt="">
+          <div class="col-md-6">
+            <div class="mt-5">
+              <h1>
+                {{.Project.Title}}
+              </h1>
+            </div>
+            <div class="mt-4">
+              <h4>Duration </h4>
+              <i class="fa-regular fa-clock fa-xl me-2"></i>
+                {{.Project.StartDate}} ||
+                {{.Project.EndDate}}
+              </div>
+              <div class="mt-4">
+                <h4>Technolology</h4>
+                {{.Project.React}}
+                {{.Project.Python}}
+                {{.Project.Node}}
+                {{.Project.Golang}}
+            </div>
           </div>
         </div>
+        <div class="mt-4">
+          {{.Project.Content}}
+        </div>
       </div>
-  
-        
     </div>
 </body>
 </html>

@@ -38,27 +38,27 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-5 mt-5">
-                <form action="/addProject" method="POST">
+                <form action="/updateProject/{{.Project.Id}}" method="POST">
                     <div>
                         <h1 class="text-center">ADD MY PROJECT</h1>
                     </div>
                     <div class="mb-3 mt-4">
                         <label for="name" class="form-label fw-bold">Project Name</label>
-                        <input type="text" class="form-control shadow-sm"  id="name" name="name">
+                        <input type="text" class="form-control shadow-sm" value="{{.Project.Title}}" id="name" name="name">
                     </div>
                     <div class="d-flex flex-row gap-4">
                       <div class="mb-3">
                           <label for="startDate" class="form-label fw-bold">Start date</label>
-                          <input style="width: 250px;" type="text" class="form-control shadow-sm"  id="startDate" name="startDate">
+                          <input style="width: 250px;" type="text" class="form-control shadow-sm" value="{{.Project.StartDate}}" id="startDate" name="startDate">
                       </div>
                       <div class="mb-3">
                           <label for="endDate" class="form-label fw-bold">End Date</label>
-                          <input style="width: 250px;" type="text" class="form-control shadow-sm"  id="endDate" name="endDate">
+                          <input style="width: 250px;" type="text" class="form-control shadow-sm"  value="{{.Project.EndDate}}" id="endDate" name="endDate">
                       </div>
                     </div>
                     <div class="mb-3">
                         <label for="exampleFormControlTextarea1" class="form-label fw-bold">Your Message</label>
-                        <textarea class="form-control h-25 shadow-sm" id="exampleFormControlTextarea1" rows="3"  name="textArea"></textarea>
+                        <textarea class="form-control h-25 shadow-sm" id="exampleFormControlTextarea1" rows="3"  value="{{.Project.Content}}" name="textArea"></textarea>
                     </div>
                     <div class="d-flex gap-3 mb-3">
                       <div class="d-flex flex-column gap-3">
@@ -95,7 +95,7 @@
                       <input class="form-control form-control-SM shadow-sm" id="image" type="file" name="upImage">
                   </div>
                     <div class="mt-5 text-end">
-                        <button type="submit" class="btn btn-dark px-3 rounded-4">Submit</button>
+                        <button type="submit" class="btn btn-dark px-3 rounded-4">UPDATE DATA</button>
                     </div>
                 </form>
             </div>

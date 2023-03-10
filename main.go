@@ -31,6 +31,7 @@ type Project struct {
 	Python    string
 	Node      string
 	Golang    string
+	Id        int
 }
 
 var dataBlog = []Blog{
@@ -101,6 +102,8 @@ func main() {
 	e.POST("/addProject", addProject)
 	e.GET("/deleteProject/:id", deleteProject)
 	e.GET("/detailProject/:id", detailProject)
+	e.GET("/editProject/:id", editProject)
+	e.POST("/updateProject/:id", updateProject)
 
 	fmt.Println("Server berjalan di port 5000")
 	e.Logger.Fatal(e.Start("localhost:5000"))
@@ -255,6 +258,7 @@ func detailProject(c echo.Context) error {
 				Python:    data.Python,
 				Node:      data.Node,
 				Golang:    data.Golang,
+				Id:        id,
 			}
 		}
 
@@ -263,4 +267,64 @@ func detailProject(c echo.Context) error {
 		"Project": ProjectDetail,
 	}
 	return c.Render(http.StatusOK, "detailProject.html", detailProject)
+}
+
+func editProject(c echo.Context) error {
+	id, _ := strconv.Atoi(c.Param("id"))
+
+	var ProjectDetail = Project{}
+
+	for i, data := range dataProject {
+		if id == i {
+			ProjectDetail = Project{
+				Title:     data.Title,
+				StartDate: data.StartDate,
+				EndDate:   data.EndDate,
+				Content:   data.Content,
+				React:     data.React,
+				Python:    data.Python,
+				Node:      data.Node,
+				Golang:    data.Golang,
+				Id:        id,
+			}
+		}
+	}
+	detailProject := map[string]interface{}{
+		"Project": ProjectDetail,
+	}
+	return c.Render(http.StatusOK, "editProject.html", detailProject)
+}
+
+func updateProject(c echo.Context) error {
+	id, _ := strconv.Atoi(c.Param("id"))
+	title := c.FormValue("name")
+	startDate := c.FormValue("startDate")
+	endDate := c.FormValue("endDate")
+	content := c.FormValue("textArea")
+	react := c.FormValue("react")
+	python := c.FormValue("python")
+	node := c.FormValue("node")
+	golang := c.FormValue("golang")
+
+	println("Title: " + title)
+	println("startDate: " + startDate)
+	println("endDate: " + endDate)
+	println("Content: " + content)
+	println("tech1: " + react)
+	println("tech2: " + python)
+	println("tech3: " + node)
+	println("tech4: " + golang)
+
+	var newProject = Project{
+		Title:     title,
+		StartDate: startDate,
+		EndDate:   endDate,
+		Content:   content,
+		React:     react,
+		Python:    python,
+		Node:      node,
+		Golang:    golang,
+	}
+	dataProject[id] = newProject
+	return c.Redirect(http.StatusMovedPermanently, "/")
 }
