@@ -1,0 +1,77 @@
+<html>
+
+<head>
+  <title>Creating Blog Page</title>
+  <link rel="stylesheet" href="/public/css/blog.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+    integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+  <!-- NavBar -->
+  <nav>
+    <div class="left-side">
+      <a href="/">
+        <img src="public/images/logo.png" alt="logo" />
+      </a>
+      <ul>
+        <li>
+          <a href="/">Home</a>
+        </li>
+        <li>
+          <a href="/blog" class="list-active">Blog</a>
+        </li>
+      </ul>
+    </div>
+    <div class="right-side">
+      <a href="/contact"> Contact Me </a>
+    </div>
+  </nav>
+
+  <!-- Blog -->
+  <!-- Form -->
+  <div class="blog">
+       <!-- <hr class="line" /> -->
+    <div style="margin-top: 50px; text-align:end; margin-right: 120px;">
+      <a href="/form-blog"
+        style="background-color: orangered; padding: 10px 20px; color: white; text-decoration: none">Add Blog</a>
+    </div>
+
+
+    <div id="contents" class="blog-list">
+      <!-- dynamic content would be here -->
+      {{range $index, $data := .Blogs}}
+      <div class="blog-list-item">
+        <div class="blog-image">
+          <img src="/public/images/blog-img.png" alt="" />
+        </div>
+        <div class="blog-content">
+          <div class="btn-group">
+            <button class="btn-edit">Edit Post</button>
+            <a href="/delete-blog/{{$index}}" class="btn-post" style="text-decoration: none;">Delete Blog</a>
+          </div>
+          <h1>
+            <a href="/blog-detail/{{$index}}" target="_blank">{{$data.Title}}</a>
+          </h1>
+          <div class="detail-blog-content">
+            {{$data.PostDate}} | {{$data.Author}}
+          </div>
+          <p>
+           {{$data.Content}}
+          </p>
+
+          <div style="float:right; margin: 10px">
+            <p style="font-size: 15px; color:grey">1 minutes ago</p>
+          </div>
+
+        </div>
+      </div>
+      {{end}}
+    </div>
+  </div>
+
+  <script src="/public/js/blog.js"></script>
+</body>
+
+</html>
