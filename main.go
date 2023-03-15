@@ -127,6 +127,7 @@ func home(c echo.Context) error {
 		"FlashName":    sess.Values["name"],
 	}
 	delete(sess.Values, "message")
+
 	sess.Save(c.Request(), c.Response())
 	data, _ := connection.Conn.Query(context.Background(), "SELECT tb_project.id, tb_project.title, tb_project.content, tb_project.tech, 	tb_project.start_date, tb_project.end_date, tb_project.duration, tb_user.name FROM tb_project inner join tb_user ON tb_project.author_id = tb_user.id")
 
