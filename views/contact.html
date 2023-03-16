@@ -43,19 +43,19 @@
                     </div>
                     <div class="mb-3 mt-4">
                         <label for="name" class="form-label fw-bold">Name</label>
-                        <input type="text" class="form-control shadow-sm" id="name">
+                        <input type="text" class="form-control shadow-sm" id="name" required>
                     </div>
                     <div class="mb-3">
                         <label for="email" class="form-label fw-bold">Email</label>
-                        <input type="text" class="form-control shadow-sm" id="email">
+                        <input type="text" class="form-control shadow-sm" id="email" required>
                     </div>
                     <div class="mb-3">
                         <label for="phone" class="form-label fw-bold">Phone Number</label>
-                        <input type="text" class="form-control shadow-sm" id="phone">
+                        <input type="text" class="form-control shadow-sm" id="phone" required>
                     </div>
                     <div class=" mb-3">
-                        <label for="select" class="form-label fw-bold">Subject</label>
-                        <select class="form-select" id="select" >
+                        <label for="subject" class="form-label fw-bold" aria-required="true">Subject</label>
+                        <select class="form-select" id="subject" >
                         <option selected></option>
                         <option value="1">One</option>
                         <option value="2">Two</option>
@@ -63,15 +63,45 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="exampleFormControlTextarea1" class="form-label fw-bold">Your Message</label>
-                        <textarea class="form-control h-25 shadow-sm" id="exampleFormControlTextarea1" rows="3"></textarea>
+                        <label for="message" class="form-label fw-bold">Your Message</label>
+                        <textarea class="form-control h-25 shadow-sm" id="message" rows="3" required></textarea>
                     </div>
                     <div class="mt-5 text-end">
-                        <button type="button" class="btn btn-dark px-3 rounded-4">Submit</button>
+                        <button type="button" onclick="getData()" class="btn btn-dark px-3 rounded-4">Submit</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </body>
+
+  <script>
+    function getData() {
+  let name = document.getElementById("name").value;
+  let email = document.getElementById("email").value;
+  let phone = document.getElementById("phone").value;
+  let subject = document.getElementById("subject").value;
+  let message = document.getElementById("message").value;
+
+  if (name == "") {
+    return alert("Name can't be Empty!");
+  } else if (email == "") {
+    return alert("email can't be Empty!");
+  } else if (phone == "") {
+    return alert("telpon can't be Empty!");
+  } else if (subject == "") {
+    return alert("pesan can't be Empty!");
+  } else if (message == "") {
+    return alert("Pesam can't be Empty!");
+  }
+
+
+  const emailReceiver = "rhomairama.dev@gmail.com";
+
+let a = document.createElement("a");
+a.href = `mailto:${emailReceiver}?subject=${subject}&body=Hello my name is ${name}, Pesan saya ${message}, bisakah anda menghubungi saya di ${phone}`;
+a.click();
+
+    }
+  </script>
 </html>
