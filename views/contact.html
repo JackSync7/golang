@@ -23,9 +23,11 @@
               <li class="nav-item">
                 <a class="nav-link active fw-bold" aria-current="page" href="/">Home</a>
               </li>
+              {{if .FlashStatus}}
               <li class="nav-item">
                 <a class="nav-link" href="myProject">Add Project</a>
               </li>
+              {{end}}
             </ul>
             <a href="contact"><button type="button" class="btn btn-dark px-3">Contact me</button></a>
           </div>

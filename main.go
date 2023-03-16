@@ -27,11 +27,6 @@ type User struct {
 	Name, Email, Password string
 }
 
-type Blog struct {
-	ID                                      int
-	Title, Content, Author, PostDate, Image string
-}
-
 type Project struct {
 	Title, Content, React, Python, Node, Golang, Duration, Waktu, Author, Image string
 	StartDate, EndDate                                                          time.Time
@@ -82,6 +77,13 @@ func main() {
 
 func formLogin(c echo.Context) error {
 	sess, _ := session.Get("session", c)
+	flash := map[string]interface{}{
+		"FlashStatus":  sess.Values["isLogin"],
+		"FlashMessage": sess.Values["message"],
+		"FlashName":    sess.Values["name"],
+	}
+
+	sess.Save(c.Request(), c.Response())
 	delete(sess.Values, "message")
 	delete(sess.Values, "status")
 	tmpl, err := template.ParseFiles("views/login.html")
@@ -89,7 +91,7 @@ func formLogin(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message ": err.Error()})
 	}
-	return tmpl.Execute(c.Response(), nil)
+	return tmpl.Execute(c.Response(), flash)
 }
 
 func formRegister(c echo.Context) error {
@@ -151,7 +153,16 @@ func home(c echo.Context) error {
 }
 
 func contact(c echo.Context) error {
-	return c.Render(http.StatusOK, "contact.html", nil)
+	sess, _ := session.Get("session", c)
+	flash := map[string]interface{}{
+		"FlashStatus":  sess.Values["isLogin"],
+		"FlashMessage": sess.Values["message"],
+		"FlashName":    sess.Values["name"],
+	}
+	delete(sess.Values, "message")
+
+	sess.Save(c.Request(), c.Response())
+	return c.Render(http.StatusOK, "contact.html", flash)
 }
 
 func myProject(c echo.Context) error {
@@ -243,8 +254,18 @@ func detailProject(c echo.Context) error {
 
 	id, _ := strconv.Atoi(c.Param("id"))
 
+	sess, _ := session.Get("session", c)
+	flash := map[string]interface{}{
+		"FlashStatus":  sess.Values["isLogin"],
+		"FlashMessage": sess.Values["message"],
+		"FlashName":    sess.Values["name"],
+	}
+	delete(sess.Values, "message")
+
+	sess.Save(c.Request(), c.Response())
+
 	var ProjectDetail = Project{}
-	err := connection.Conn.QueryRow(context.Background(), "SELECT tb_project.id, tb_project.title, tb_project.content, tb_project.tech, tb_project.start_date, tb_project.end_date, tb_project.duration, tb_user.name FROM tb_project inner join tb_user ON tb_project.author_id = tb_user.id where tb_project.id = $1", id).Scan(&ProjectDetail.Id, &ProjectDetail.Title, &ProjectDetail.Content, &ProjectDetail.Tech, &ProjectDetail.StartDate, &ProjectDetail.EndDate, &ProjectDetail.Duration, &ProjectDetail.Author)
+	err := connection.Conn.QueryRow(context.Background(), "SELECT tb_project.id, tb_project.title, tb_project.content, tb_project.tech, tb_project.start_date, tb_project.end_date, tb_project.duration, tb_user.name, tb_project.image FROM tb_project inner join tb_user ON tb_project.author_id = tb_user.id where tb_project.id = $1", id).Scan(&ProjectDetail.Id, &ProjectDetail.Title, &ProjectDetail.Content, &ProjectDetail.Tech, &ProjectDetail.StartDate, &ProjectDetail.EndDate, &ProjectDetail.Duration, &ProjectDetail.Author, &ProjectDetail.Image)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"Message ": err.Error()})
@@ -254,6 +275,7 @@ func detailProject(c echo.Context) error {
 
 	detailProject := map[string]interface{}{
 		"Project": ProjectDetail,
+		"Flash":   flash,
 	}
 	return c.Render(http.StatusOK, "detailProject.html", detailProject)
 }
