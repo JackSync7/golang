@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"personal-web/connection"
+	"personal-web/middleware"
 	"strconv"
 	"text/template"
 	"time"
@@ -32,10 +33,10 @@ type Blog struct {
 }
 
 type Project struct {
-	Title, Content, React, Python, Node, Golang, Duration, Waktu, Author string
-	StartDate, EndDate                                                   time.Time
-	Id                                                                   int
-	Tech                                                                 []string
+	Title, Content, React, Python, Node, Golang, Duration, Waktu, Author, Image string
+	StartDate, EndDate                                                          time.Time
+	Id                                                                          int
+	Tech                                                                        []string
 }
 
 func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
@@ -49,6 +50,7 @@ func main() {
 
 	// route statis untuk mengakses folder public
 	e.Static("/public", "public") // /public
+	e.Static("/upload", "upload")
 
 	e.Use(session.Middleware(sessions.NewCookieStore([]byte("session"))))
 
@@ -67,11 +69,11 @@ func main() {
 	e.POST("/runLogin", runLogin)
 	e.GET("/contact", contact)
 	e.GET("/myProject", myProject)
-	e.POST("/addProject", addProject)
+	e.POST("/addProject", middleware.UploadFile(addProject))
 	e.GET("/deleteProject/:id", deleteProject)
 	e.GET("/detailProject/:id", detailProject)
 	e.GET("/editProject/:id", editProject)
-	e.POST("/updateProject/:id", updateProject)
+	e.POST("/updateProject/:id", middleware.UploadFile(updateProject))
 	e.GET("/logout", logout)
 
 	fmt.Println("Server berjalan di port 5000")
@@ -129,12 +131,12 @@ func home(c echo.Context) error {
 	delete(sess.Values, "message")
 
 	sess.Save(c.Request(), c.Response())
-	data, _ := connection.Conn.Query(context.Background(), "SELECT tb_project.id, tb_project.title, tb_project.content, tb_project.tech, 	tb_project.start_date, tb_project.end_date, tb_project.duration, tb_user.name FROM tb_project inner join tb_user ON tb_project.author_id = tb_user.id")
+	data, _ := connection.Conn.Query(context.Background(), "SELECT tb_project.id, tb_project.title, tb_project.content, tb_project.tech, tb_project.start_date, tb_project.end_date, tb_project.duration, tb_user.name, tb_project.image FROM tb_project inner join tb_user ON tb_project.author_id = tb_user.id")
 
 	var result []Project
 	for data.Next() {
 		var each = Project{}
-		err := data.Scan(&each.Id, &each.Title, &each.Content, &each.Tech, &each.StartDate, &each.EndDate, &each.Duration, &each.Author)
+		err := data.Scan(&each.Id, &each.Title, &each.Content, &each.Tech, &each.StartDate, &each.EndDate, &each.Duration, &each.Author, &each.Image)
 		if err != nil {
 			fmt.Println(err.Error())
 			return c.JSON(http.StatusInternalServerError, map[string]string{"Message ": err.Error()})
@@ -186,7 +188,7 @@ func addProject(c echo.Context) error {
 	techs[2] = node
 	techs[3] = golang
 
-	fmt.Print(techs)
+	image := c.Get("dataFile").(string)
 
 	layout := "2006-01-02"
 	t1, _ := time.Parse(layout, endDate)
@@ -218,7 +220,7 @@ func addProject(c echo.Context) error {
 		fmt.Printf("ini hari : %s --", Distance)
 	}
 
-	_, err := connection.Conn.Exec(context.Background(), "INSERT INTO tb_project (title, content, start_date, end_date, tech, duration, author_id) VALUES ($1, $2, $3, $4, $5, $6, $7)", title, content, t2, t1, techs, Distance, author)
+	_, err := connection.Conn.Exec(context.Background(), "INSERT INTO tb_project (title, content, start_date, end_date, tech, duration, author_id, image) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", title, content, t2, t1, techs, Distance, author, image)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"Message ": err.Error()})
 	}
@@ -242,7 +244,7 @@ func detailProject(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
 
 	var ProjectDetail = Project{}
-	err := connection.Conn.QueryRow(context.Background(), "SELECT id, title, content, start_date, tech, duration FROM tb_project where id = $1", id).Scan(&ProjectDetail.Id, &ProjectDetail.Title, &ProjectDetail.Content, &ProjectDetail.StartDate, &ProjectDetail.Tech, &ProjectDetail.Duration)
+	err := connection.Conn.QueryRow(context.Background(), "SELECT tb_project.id, tb_project.title, tb_project.content, tb_project.tech, tb_project.start_date, tb_project.end_date, tb_project.duration, tb_user.name FROM tb_project inner join tb_user ON tb_project.author_id = tb_user.id where tb_project.id = $1", id).Scan(&ProjectDetail.Id, &ProjectDetail.Title, &ProjectDetail.Content, &ProjectDetail.Tech, &ProjectDetail.StartDate, &ProjectDetail.EndDate, &ProjectDetail.Duration, &ProjectDetail.Author)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"Message ": err.Error()})
@@ -283,6 +285,7 @@ func updateProject(c echo.Context) error {
 	node := c.FormValue("node")
 	golang := c.FormValue("golang")
 
+	image := c.Get("dataFile").(string)
 	var techs [4]string
 	techs[0] = react
 	techs[1] = python
@@ -321,7 +324,7 @@ func updateProject(c echo.Context) error {
 		fmt.Printf("ini hari : %s --", Distance)
 	}
 
-	_, err := connection.Conn.Exec(context.Background(), "UPDATE tb_project SET title = $1, content = $2, start_date = $3, end_date = $4, tech = $5, duration = $6 WHERE id = $7 ", title, content, t2, t1, techs, Distance, id)
+	_, err := connection.Conn.Exec(context.Background(), "UPDATE tb_project SET title = $1, content = $2, start_date = $3, end_date = $4, tech = $5, duration = $6, image = $7 WHERE id = $8 ", title, content, t2, t1, techs, Distance, image, id)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"Message ": err.Error()})
 	}
